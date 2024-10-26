@@ -6,6 +6,7 @@ class Post(models.Model):
     content = models.TextField()
     title = models.TextField()
     image = models.ImageField(upload_to='posts/images/', blank=True, null=True)
+    hashtags = models.CharField(max_length=30,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)

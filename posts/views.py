@@ -1,3 +1,4 @@
+import re
 from django.core.cache import cache
 from .models import Post
 from .serializers import PostSerializer
@@ -6,6 +7,7 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from django.db.models import Q
 
 class PostListCreateView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -60,3 +62,17 @@ class UserFeedView(generics.ListAPIView):
             feed = Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
             cache.set(cache_key, feed, 60 * 15)
         return feed
+
+class HashtagSearchView(generics.ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        query = self.request.query_params.get('q', '').strip()
+
+        if not query:
+            return Post.objects.none()
+
+        all_posts = Post.objects.all()
+        filtered_posts = [post for post in all_posts if f'{query}' in post.hashtags]
+
+        return filtered_posts
