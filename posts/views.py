@@ -1,7 +1,10 @@
-from rest_framework import generics
+from django.core.cache import cache
 from .models import Post
 from .serializers import PostSerializer
+from app.permissions import IsAuthorOrReadOnly
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 class PostListCreateView(generics.ListCreateAPIView):
@@ -15,7 +18,8 @@ class PostListCreateView(generics.ListCreateAPIView):
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    
     def get(self, request, *args, **kwargs):
         post = self.get_object()
         return Response({
@@ -37,3 +41,22 @@ class LikePostView(generics.UpdateAPIView):
         else:
             post.likes.add(user)
             return Response({'status': 'Liked post'})
+        
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class UserFeedView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostSerializer
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        cache_key = f'user_feed_{user.id}'
+        feed = cache.get(cache_key)
+        if feed is None:
+            feed = Post.objects.filter(author__in=user.following.all()).order_by('-created_at')
+            cache.set(cache_key, feed, 60 * 15)
+        return feed
