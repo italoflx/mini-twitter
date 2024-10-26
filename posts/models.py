@@ -4,6 +4,7 @@ from users.models import User
 class Post(models.Model):
     author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     content = models.TextField()
+    title = models.TextField()
     image = models.ImageField(upload_to='posts/images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

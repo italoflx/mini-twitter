@@ -4,10 +4,11 @@ from django.core.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     followers = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField() 
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password', 'followers_count', 'followers']
+        fields = ['id', 'username', 'email', 'password', 'followers_count', 'followers', 'following']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -37,3 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_followers(self, obj):
         return [{"id": follower.id, "username": follower.username, "email": follower.email} for follower in obj.followers.all()]
+    
+    def get_following(self, obj):
+        return [{"id": following.id, "username": following.username} for following in obj.following.all()]

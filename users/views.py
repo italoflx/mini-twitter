@@ -3,10 +3,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 from . import models
 from . import serializers
 from . import tasks
-from django.shortcuts import get_object_or_404
 
 class RegisterView(generics.CreateAPIView):
     queryset = models.User.objects.all()

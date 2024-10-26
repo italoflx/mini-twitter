@@ -126,15 +126,15 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle', 
-        'rest_framework.throttling.UserRateThrottle', 
-    ],
-    # Baixo número requisições para facilitar os testes
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '5/minute',  
-        'user': '10/minute',
-    }
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle', 
+    #     'rest_framework.throttling.UserRateThrottle', 
+    # ],
+    # # Baixo número requisições para facilitar os testes
+    # 'DEFAULT_THROTTLE_RATES': {
+    #     'anon': '5/minute',  
+    #     'user': '10/minute',
+    # }
 }
 
 CACHES = {

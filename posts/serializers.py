@@ -6,7 +6,7 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'author', 'content', 'image', 'created_at', 'updated_at', 'likes']
+        fields = ['id', 'author','title', 'content', 'image', 'created_at', 'updated_at', 'likes']
         read_only_fields = ['likes']  
 
     def create(self, validated_data):
@@ -14,13 +14,20 @@ class PostSerializer(serializers.ModelSerializer):
 
     def validate_content(self, value):
         if not value.strip():
-            raise serializers.ValidationError("O conteúdo não pode estar vazio.")
+            raise serializers.ValidationError("Content cannot be empty.")
         if len(value) > 500:
-            raise serializers.ValidationError("O conteúdo não pode ter mais de 500 caracteres.")
+            raise serializers.ValidationError("Content cannot be longer than 500 characters.")
+        return value
+    
+    def validate_title(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("The title cannot be empty.")
+        if len(value) > 500:
+            raise serializers.ValidationError("Content cannot be longer than 500 characters.")
         return value
 
     def validate_image(self, value):
         if value:
             if not value.name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                raise serializers.ValidationError("O arquivo deve ser uma imagem válida (PNG, JPG, JPEG, GIF).")
+                raise serializers.ValidationError("The file must be a valid image (PNG, JPG, JPEG, GIF).")
         return value
